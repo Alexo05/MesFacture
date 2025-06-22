@@ -1,0 +1,64 @@
+
+
+List<Map<String, dynamic>> factures = [
+  {
+    'id': 'inv-001',
+    'clientName': '',
+    'clientEmail': '',
+    'invoiceDate': '22-06-2025',
+    'products':[
+      {
+        'name':'',
+        'description': '',
+        'price': 200
+      },
+      {
+        'name':'',
+        'description': '',
+        'price': 200
+      },
+      {
+        'name':'',
+        'description': '',
+        'price': 200
+      },
+      {
+        'name':'',
+        'description': '',
+        'price': 200
+      },
+    ],
+    'TotalHT': '5321',
+    'TotalTTC' : 5321,
+  },
+   {
+    'id': 'inv-002',
+    'clientName': '',
+    'clientEmail': '',
+    'invoiceDate': '22-06-2025',
+    'products':[
+      {
+        'name':'',
+        'description': '',
+        'price': 200
+      },
+      {
+        'name':'',
+        'description': '',
+        'price': 200
+      },
+      {
+        'name':'',
+        'description': '',
+        'price': 200
+      },
+      {
+        'name':'',
+        'description': '',
+        'price': 200
+      },
+    ],
+    'TotalHT': '',
+    'TotalTTC' : 56456,
+  },
+];
