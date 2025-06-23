@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mes_factures/Components/ProductCard.dart';
 import 'package:mes_factures/Components/ProductForm.dart';
 import 'package:mes_factures/models/invoiceModel.dart';
 import 'package:popup_card/popup_card.dart';
@@ -52,7 +53,8 @@ class _ProductsFormState extends State<ProductsForm> {
             ),
           ),
           ],
-        )
+        ),
+        ProductCard(),
       ],
     );
   }

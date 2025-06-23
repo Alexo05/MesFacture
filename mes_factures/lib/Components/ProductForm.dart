@@ -13,6 +13,16 @@ class ProductForm extends StatefulWidget {
 class _ProductFormState extends State<ProductForm> {
 
   Product produit = Product(name: "", description: "", qte: 0, price: 0);
+  double totalPrice = 0;
+
+  void calculateTotalPrice(){
+    if(produit.price != 0 && produit.qte != 0) {
+      setState(() {
+        totalPrice = produit.price * produit.qte;
+      });
+      print(totalPrice);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +170,8 @@ class _ProductFormState extends State<ProductForm> {
               ],
               onChanged: (value) {
                 setState(() {
-                  produit.qte = int.parse(value);
+                  produit.qte = double.parse(value);
+                  calculateTotalPrice();
                 });
               },
             ),
@@ -205,7 +216,8 @@ class _ProductFormState extends State<ProductForm> {
               ],
               onChanged: (value) {
                 setState(() {
-                  produit.price = int.parse(value);
+                  produit.price = double.parse(value);
+                  calculateTotalPrice();
                 });
               },
             ),
@@ -238,9 +250,9 @@ class _ProductFormState extends State<ProductForm> {
               readOnly: true,
               decoration: InputDecoration(
                 border: InputBorder.none, 
-                hintText: "0",
+                hintText: totalPrice.toString(),
                 hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.tertiary,
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontSize: 15,
                 ), 
               ),
