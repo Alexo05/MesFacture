@@ -2,6 +2,7 @@ import 'package:alert_info/alert_info.dart';
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:flutter/material.dart';
 import 'package:mes_factures/Components/ClientForm.dart';
+import 'package:mes_factures/Components/ProductsForm.dart';
 
 class AddInvoice extends StatefulWidget {
   const AddInvoice({super.key});
@@ -181,6 +182,8 @@ class _AddInvoiceState extends State<AddInvoice> {
                           children: [
                             if (activeStep == 0)
                               ClientForm(nameController: nameController, emailController: emailController, adresseController: adressController, dateController: dateController,),
+                            if(activeStep == 1)
+                              ProductsForm(),
                           ],
                         ),
                       ),

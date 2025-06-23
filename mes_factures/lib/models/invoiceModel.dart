@@ -45,13 +45,15 @@ class Facture {
 }
 
 class Product {
-  final String name;
-  final String description;
-  final dynamic price; 
+  String name;
+  String description;
+  dynamic qte;
+  dynamic price; 
 
   Product({
     required this.name,
     required this.description,
+    required this.qte,
     required this.price,
   });
 
@@ -59,6 +61,7 @@ class Product {
     return Product(
       name: json['name'],
       description: json['description'],
+      qte: json['qte'],
       price: json['price'],
     );
   }
@@ -67,6 +70,7 @@ class Product {
     return {
       'name': name,
       'description': description,
+      'qte': qte,
       'price': price,
     };
   }
