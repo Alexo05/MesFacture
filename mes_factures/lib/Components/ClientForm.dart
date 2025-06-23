@@ -199,7 +199,7 @@ class _ClientFormState extends State<ClientForm> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // ignore: prefer_if_null_operators, unnecessary_null_comparison
-                  Text(widget.dateController.text != null ? widget.dateController.text : "Selectionner une date", 
+                  Text(widget.dateController.text != '' ? widget.dateController.text : "Selectionner une date", 
                   textAlign: TextAlign.start,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.tertiary,
