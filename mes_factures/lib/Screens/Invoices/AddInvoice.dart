@@ -1,5 +1,7 @@
+import 'package:alert_info/alert_info.dart';
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:flutter/material.dart';
+import 'package:mes_factures/Components/ClientForm.dart';
 
 class AddInvoice extends StatefulWidget {
   const AddInvoice({super.key});
@@ -12,13 +14,29 @@ class _AddInvoiceState extends State<AddInvoice> {
 
   int activeStep = 0;
   bool isForward = true; 
+  final _formKey = GlobalKey<FormState>(); 
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController adressController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
+
 
   void nextStep() {
       setState(() {
-        if(activeStep == 1 ){
-         
-            activeStep++;
-            isForward = true;
+        if(activeStep == 0 ){
+            if(nameController.text.isNotEmpty && emailController.text.isNotEmpty && adressController.text.isNotEmpty && dateController.text.isNotEmpty){
+              activeStep++;
+              isForward = true;
+            }
+            else{
+               AlertInfo.show(
+                    context: context,
+                    text: 'Veuillez d\'abord remplir tous les champs.',
+                    typeInfo: TypeInfo.error,
+                    backgroundColor: Colors.white,
+                    textColor: Colors.grey.shade800,
+                );
+            }
         }
         else if (activeStep < 2) {
           activeStep++;
@@ -141,7 +159,34 @@ class _AddInvoiceState extends State<AddInvoice> {
                                  ),
                     ),
                     SizedBox(height: 20,),
-              
+                SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 16, right: 16),
+                    child: Form(
+                      key: _formKey,
+                      child: AnimatedSwitcher(
+                        duration: Duration(milliseconds: 500), // Animation speed
+                        transitionBuilder: (Widget child, Animation<double> animation) {
+                          // Swipe Animation
+                          final slideOffset = isForward ? Offset(-1, 0) : Offset(1, 0);
+                          return SlideTransition(
+                            position: Tween<Offset>(begin: slideOffset, end: Offset.zero)
+                                .animate(animation),
+                            child: child,
+                          );
+                        },
+                        child: Column(
+                          key: ValueKey<int>(activeStep), // Ensure animation applies when activeStep changes
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (activeStep == 0)
+                              ClientForm(nameController: nameController, emailController: emailController, adresseController: adressController, dateController: dateController,),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
              Padding(
