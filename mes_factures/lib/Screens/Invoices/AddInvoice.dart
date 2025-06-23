@@ -3,6 +3,7 @@ import 'package:easy_stepper/easy_stepper.dart';
 import 'package:flutter/material.dart';
 import 'package:mes_factures/Components/ClientForm.dart';
 import 'package:mes_factures/Components/ProductsForm.dart';
+import 'package:mes_factures/models/invoiceModel.dart';
 
 class AddInvoice extends StatefulWidget {
   const AddInvoice({super.key});
@@ -20,6 +21,33 @@ class _AddInvoiceState extends State<AddInvoice> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController adressController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
+  List<Product> produits = [];
+  double totalPrice = 0;
+
+  void onProductInsert(Product produit){
+    setState(() {
+      produits.add(produit);
+    });
+    totalPrice = 0;
+    for(var p in produits){
+      setState(() {
+        totalPrice += p.price * p.qte;
+      });
+    }
+  }
+  
+  void onProductDelete(int index){
+    print(index);
+      setState(() {
+        produits.removeAt(index);
+       });
+      totalPrice = 0;
+      for(var p in produits){
+      setState(() {
+        totalPrice += p.price * p.qte;
+        });
+      }
+  }
 
 
   void nextStep() {
@@ -40,11 +68,19 @@ class _AddInvoiceState extends State<AddInvoice> {
             }
         }
         else if (activeStep < 2) {
-          activeStep++;
-          isForward = true;
-        } else {
-         
-        };
+          if(produits.isEmpty){
+             AlertInfo.show(
+                    context: context,
+                    text: 'Veuillez d\'abord ajouter un/des produits.',
+                    typeInfo: TypeInfo.error,
+                    backgroundColor: Colors.white,
+                    textColor: Colors.grey.shade800,
+                );
+          }else{
+            activeStep++;
+            isForward = true;
+          }
+        }
         
       });
   }
@@ -183,7 +219,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                             if (activeStep == 0)
                               ClientForm(nameController: nameController, emailController: emailController, adresseController: adressController, dateController: dateController,),
                             if(activeStep == 1)
-                              ProductsForm(),
+                              ProductsForm(onProductInsert: onProductInsert, totalPrice: totalPrice, produits: produits, onProductDelete: onProductDelete,),
                           ],
                         ),
                       ),

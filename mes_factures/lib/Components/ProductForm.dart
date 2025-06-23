@@ -1,10 +1,12 @@
+import 'package:alert_info/alert_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mes_factures/models/invoiceModel.dart';
 
 class ProductForm extends StatefulWidget {
-  const ProductForm({super.key});
+  const ProductForm({super.key, required this.onProductInsert});
+  final Function( Product produit) onProductInsert;
 
   @override
   State<ProductForm> createState() => _ProductFormState();
@@ -271,6 +273,26 @@ class _ProductFormState extends State<ProductForm> {
               ),
               child: ElevatedButton(
                 onPressed: ()  {
+                  if(produit.name == "" || produit.description == "" || produit.price == 0 || produit.qte == 0){
+                     AlertInfo.show(
+                        context: context,
+                        text: 'Veuillez d\'abord remplir tous les champs.',
+                        typeInfo: TypeInfo.error,
+                        backgroundColor: Colors.white,
+                        textColor: Colors.grey.shade800,
+                    );
+                  }
+                  else{
+                    widget.onProductInsert(produit);
+                     AlertInfo.show(
+                        context: context,
+                        text: 'Produit ajouté.',
+                        typeInfo: TypeInfo.success,
+                        backgroundColor: Colors.white,
+                        textColor: Colors.grey.shade800,
+                    );
+                    Navigator.pop(context);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
