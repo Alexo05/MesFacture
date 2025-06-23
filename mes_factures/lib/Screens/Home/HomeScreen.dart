@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mes_factures/Screens/Invoices/AddInvoice.dart';
+import 'package:mes_factures/Screens/Invoices/InvoiceView.dart';
 import 'package:mes_factures/models/invoiceModel.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -17,63 +18,35 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int totalSells = 100000;
+  double totalSells = 0.0;
   int totalInvoices = 20;
   int totalClients = 15;
   late final controller = SlidableController(this as TickerProvider);
   List<Facture> factures = [];
-
-  //  String jsonData = '''
-  // [
-  //   {
-  //     "id": "inv-001",
-  //     "clientName": "Zakariae",
-  //     "clientEmail": "Zakariaeamrani6@gmail.com",
-  //     "invoiceDate": "22-06-2025",
-  //     "products": [
-  //       {"name": "Iphone", "description": "Iphone", "price": 200},
-  //       {"name": "Iphone", "description": "Iphone", "price": 200},
-  //       {"name": "Iphone", "description": "Iphone", "price": 200},
-  //       {"name": "Iphone", "description": "Iphone", "price": 200}
-  //     ],
-  //     "TotalHT": "5321",
-  //     "TotalTTC": 5321
-  //   },
-  //   {
-  //     "id": "inv-002",
-  //     "clientName": "Zakariae",
-  //     "clientEmail": "Zakariaeamrani6@gmail.com",
-  //     "invoiceDate": "22-06-2025",
-  //     "products": [
-  //       {"name": "Iphone", "description": "Iphone", "price": 200},
-  //       {"name": "Iphone", "description": "Iphone", "price": 200},
-  //       {"name": "Iphone", "description": "Iphone", "price": 200},
-  //       {"name": "Iphone", "description": "Iphone", "price": 200}
-  //     ],
-  //     "TotalHT": "5321",
-  //     "TotalTTC": 5321
-  //   }
-  // ]
-  // ''';
-
-
   void loadFactures() async {
     // final String jsonString = await rootBundle.loadString('assets/data/Factures.json');
     // final List<dynamic> jsonData = json.decode(jsonString);
     List<dynamic> jsonData =await loadJson();
     setState(() {
       factures = jsonData.map((f) => Facture.fromJson(f)).toList();
-      
+      getTotalSells();
     });
   }
   
+  void getTotalSells(){
+    totalSells = 0.0;
+    for(var f in factures){
+        totalSells += f.totalTTC;
+      }
+  }
+
   Future<File> getInvoiceFile() async {
       final dir = await getApplicationDocumentsDirectory();
       final assetsDir = Directory('${dir.path}/assets/data');
        if (!await assetsDir.exists()) {
           await assetsDir.create(recursive: true); 
         }
-      return File('${dir.path}/assets/data/MesFactures.json');
+      return File('${dir.path}/assets/data/MyInvoices.json');
     }
 
   Future<List<dynamic>> loadJson() async {
@@ -96,8 +69,28 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> saveJsonData(jsonData) async {
     final file = await getInvoiceFile();
     await file.writeAsString(jsonData);
-    print('JSON data saved to: ${file.path}');
   }
+  
+  Future<void> onInvoiceInsert(Facture facture) async {
+    final file = await getInvoiceFile();
+    List<dynamic> data = await loadJson();
+    data.add(facture.toJson());
+    await file.writeAsString(json.encode(data), flush: true);
+    totalSells = 0;
+    setState(() {
+      factures.add(facture);
+      getTotalSells();
+    });
+
+     AlertInfo.show(
+        context: context,
+        text: 'Facture Ajoutée.',
+        typeInfo: TypeInfo.success,
+        backgroundColor: Colors.white,
+        textColor: Colors.grey.shade800,
+    );
+  } 
+
   @override
   void initState() {
     super.initState(); 
@@ -120,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   context,
                   MaterialPageRoute<void>(
                     builder: (BuildContext context) =>
-                        AddInvoice(),
+                        AddInvoice(onInvoiceInsert: onInvoiceInsert, factureLenght: factures.length,),
                   ),
                   );
               },
@@ -142,6 +135,54 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
+                  Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                    Row(
+                      children: [
+                        Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Container(
+                                  width: 50,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.yellow[800],
+                                  ),
+                                  child: Icon(Icons.person, color: Colors.white, size: 25,),
+                                ),
+                              ],
+                            ),
+                        SizedBox(width: 20,),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("Bonjour Zakariae", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                            Text("Good morning", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Theme.of(context).colorScheme.tertiary),),
+                          ],
+                        )
+                      ],
+                    ),
+                     Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white
+                          ),
+                          child: Icon(CupertinoIcons.bell, color: Theme.of(context).colorScheme.tertiary, size: 22,),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+              SizedBox(height: 20,),
                   Container(
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.width / 2,
@@ -214,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ),
                                       Text(
-                                        "${totalInvoices.toStringAsFixed(0)} ",
+                                        "${factures.length} ",
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w500,
@@ -305,97 +346,115 @@ class _HomeScreenState extends State<HomeScreen> {
                         ? 8
                         : factures.length,
                     itemBuilder: (context, int i) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12.0),
-                        child: Slidable(
-                              key: const ValueKey(0),
-                              endActionPane: ActionPane(
-                                extentRatio: 0.2,
-                                motion: const ScrollMotion(),
-                                children: [
-                                SizedBox(width: 10,),
-                                SlidableAction(
-                                    onPressed: (context) async {
-                                      setState(() {
-                                        removeInvoice(i);
-                                        factures.removeAt(i);
-                                      });
-                                      AlertInfo.show(
-                                          context: context,
-                                          text: 'Facture Supprimée.',
-                                          typeInfo: TypeInfo.success,
-                                          backgroundColor: Colors.white,
-                                          textColor: Colors.grey.shade800,
-                                      );
-                                    },
-                                    backgroundColor: Color(0xFFFE4A49),
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.delete,
-                                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                                    padding: EdgeInsets.all(4),
-                                  ),
-                                ],
-                              ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
+                      return GestureDetector(
+                        onTap: (){
+                           Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (BuildContext context) =>
+                                  InvoiceView(facture: factures[i]),
+                            ),
+                            );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: Slidable(
+                                key: const ValueKey(0),
+                                endActionPane: ActionPane(
+                                  extentRatio: 0.2,
+                                  motion: const ScrollMotion(),
+                                  children: [
+                                  SizedBox(width: 10,),
+                                  SlidableAction(
+                                      onPressed: (context) async {
+                                        setState(() {
+                                          removeInvoice(i);
+                                          factures.removeAt(i);
+                                          getTotalSells();
+                                        });
+                                        AlertInfo.show(
+                                            context: context,
+                                            text: 'Facture Supprimée.',
+                                            typeInfo: TypeInfo.success,
+                                            backgroundColor: Colors.white,
+                                            textColor: Colors.grey.shade800,
+                                        );
+                                      },
+                                      backgroundColor: Color(0xFFFE4A49),
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.delete,
+                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                      padding: EdgeInsets.all(4),
+                                    ),
+                                  ],
                                 ),
-                                child:   Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 12.0,
-                                horizontal: 20,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Image(
-                                       image: AssetImage('assets/images/invoice.png'),
-                                       width: 40,
-                                       ),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        factures[i].id,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color:
-                                              Theme.of(context).colorScheme.onSurface,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      )
-                                    ],
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        "${factures[i].totalTTC.toStringAsFixed(2)} \€",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color:
-                                              Theme.of(context).colorScheme.onSurface,
-                                          fontWeight: FontWeight.w400,
+                                  child:   Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12.0,
+                                  horizontal: 20,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Image(
+                                         image: AssetImage('assets/images/invoice.png'),
+                                         width: 40,
+                                         ),
+                                        const SizedBox(
+                                          width: 10,
                                         ),
-                                      ),
-                                      Text(
-                                        factures[i].invoiceDate,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.grey,
-                                          fontWeight: FontWeight.w400,
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              factures[i].id,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color:
+                                                    Theme.of(context).colorScheme.onSurface,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            Text(factures[i].clientName)
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          "${factures[i].totalTTC.toStringAsFixed(2)} \€",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color:
+                                                Theme.of(context).colorScheme.onSurface,
+                                            fontWeight: FontWeight.w400,
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  )
-                                ],
+                                        Text(
+                                          factures[i].invoiceDate,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
                               ),
                             ),
-                            ),
-                          ),
+                        ),
                       );
                       
                       

@@ -29,12 +29,25 @@ class _ProductsFormState extends State<ProductsForm> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Ajouter vos Produits",
-            style: TextStyle(
-              fontSize: 19,
-              fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.onSurface
-            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Ajouter vos Produits",
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w700,
+                  color: Theme.of(context).colorScheme.onSurface
+                ),
+                ),
+                SizedBox(height: 5,),
+                Text("La liste de vos produits",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).colorScheme.tertiary
+                ),
+                ),
+              ],
             ),
             PopupItemLauncher(
               tag: "addPrduct",
@@ -98,8 +111,8 @@ class _ProductsFormState extends State<ProductsForm> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text("TVA", style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),),
-                              Text("20%", style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.tertiary),)
+                              Text("TVA (20%)", style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),),
+                              Text("${(widget.totalPrice * 0.2).toStringAsFixed(2)} \€", style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.tertiary),)
                             ],
                           ),
                            Row(

@@ -2,12 +2,14 @@ import 'package:alert_info/alert_info.dart';
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:flutter/material.dart';
 import 'package:mes_factures/Components/ClientForm.dart';
+import 'package:mes_factures/Components/Invoice.dart';
 import 'package:mes_factures/Components/ProductsForm.dart';
 import 'package:mes_factures/models/invoiceModel.dart';
 
 class AddInvoice extends StatefulWidget {
-  const AddInvoice({super.key});
-
+  const AddInvoice({super.key, required this.onInvoiceInsert, required this.factureLenght});
+  final Function( Facture facture) onInvoiceInsert;
+  final int factureLenght;
   @override
   State<AddInvoice> createState() => _AddInvoiceState();
 }
@@ -21,6 +23,7 @@ class _AddInvoiceState extends State<AddInvoice> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController adressController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
+  Facture facture = Facture(id: "", clientName: "", clientEmail: "", clientAdress: "", invoiceDate: "", products: [], totalHT: 0, totalTTC: 0);
   List<Product> produits = [];
   double totalPrice = 0;
 
@@ -77,9 +80,21 @@ class _AddInvoiceState extends State<AddInvoice> {
                     textColor: Colors.grey.shade800,
                 );
           }else{
+            facture.id = "inv-${widget.factureLenght + 1}";
+            facture.clientName = nameController.text;
+            facture.clientEmail = emailController.text;
+            facture.clientAdress = adressController.text;
+            facture.invoiceDate = dateController.text;
+            facture.products = produits;
+            facture.totalHT = totalPrice;
+            facture.totalTTC = ((totalPrice*0.2)+totalPrice);
             activeStep++;
             isForward = true;
           }
+        }
+        else{
+          widget.onInvoiceInsert(facture);
+          Navigator.pop(context);
         }
         
       });
@@ -202,24 +217,17 @@ class _AddInvoiceState extends State<AddInvoice> {
                     child: Form(
                       key: _formKey,
                       child: AnimatedSwitcher(
-                        duration: Duration(milliseconds: 500), // Animation speed
-                        transitionBuilder: (Widget child, Animation<double> animation) {
-                          // Swipe Animation
-                          final slideOffset = isForward ? Offset(-1, 0) : Offset(1, 0);
-                          return SlideTransition(
-                            position: Tween<Offset>(begin: slideOffset, end: Offset.zero)
-                                .animate(animation),
-                            child: child,
-                          );
-                        },
+                        duration: Duration(milliseconds: 500),
                         child: Column(
-                          key: ValueKey<int>(activeStep), // Ensure animation applies when activeStep changes
+                          key: ValueKey<int>(activeStep), 
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             if (activeStep == 0)
-                              ClientForm(nameController: nameController, emailController: emailController, adresseController: adressController, dateController: dateController,),
-                            if(activeStep == 1)
-                              ProductsForm(onProductInsert: onProductInsert, totalPrice: totalPrice, produits: produits, onProductDelete: onProductDelete,),
+                              ClientForm(nameController: nameController, emailController: emailController, adresseController: adressController, dateController: dateController,)
+                            else if (activeStep == 1)
+                              ProductsForm(onProductInsert: onProductInsert, totalPrice: totalPrice, produits: produits, onProductDelete: onProductDelete,)
+                            else
+                              Invoice(facture: facture)
                           ],
                         ),
                       ),

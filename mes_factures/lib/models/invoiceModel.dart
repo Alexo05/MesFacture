@@ -1,16 +1,18 @@
 class Facture {
-  final String id;
-  final String clientName;
-  final String clientEmail;
-  final String invoiceDate;
-  final List<Product> products;
-  final String totalHT;
-  final dynamic totalTTC; 
+  String id;
+  String clientName;
+  String clientEmail;
+  String clientAdress;
+  String invoiceDate;
+  List<Product> products;
+  dynamic totalHT;
+  dynamic totalTTC; 
 
   Facture({
     required this.id,
     required this.clientName,
     required this.clientEmail,
+    required this.clientAdress,
     required this.invoiceDate,
     required this.products,
     required this.totalHT,
@@ -22,11 +24,12 @@ class Facture {
       id: json['id'],
       clientName: json['clientName'],
       clientEmail: json['clientEmail'],
+      clientAdress:  json['clientAdress'],
       invoiceDate: json['invoiceDate'],
       products: (json['products'] as List<dynamic>)
           .map((item) => Product.fromJson(item))
           .toList(),
-      totalHT: json['TotalHT'] ?? '',
+      totalHT: json['TotalHT'],
       totalTTC: json['TotalTTC'],
     );
   }
@@ -36,6 +39,7 @@ class Facture {
       'id': id,
       'clientName': clientName,
       'clientEmail': clientEmail,
+      'clientAdress': clientAdress,
       'invoiceDate': invoiceDate,
       'products': products.map((e) => e.toJson()).toList(),
       'TotalHT': totalHT,
