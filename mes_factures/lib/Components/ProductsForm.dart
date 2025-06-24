@@ -76,13 +76,11 @@ class _ProductsFormState extends State<ProductsForm> {
           children: [
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.4,
-              child:  Expanded(
-                    child: ListView.builder(
-                      itemCount: widget.produits.length,
-                      itemBuilder: (context, int i) {
-                        return ProductCard(produit: widget.produits[i], index: i, onProductDelete: widget.onProductDelete,);
-                      },
-                    ),
+              child:  ListView.builder(
+                itemCount: widget.produits.length,
+                itemBuilder: (context, int i) {
+                  return ProductCard(produit: widget.produits[i], index: i, onProductDelete: widget.onProductDelete,);
+                },
               ),
             ),
             SizedBox(height: 10,),
